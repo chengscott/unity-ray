@@ -7,9 +7,9 @@ from ray import tune
 from ray.rllib.models import ModelCatalog
 
 if __name__ == "__main__":
-    runner = UnityEnvRunner(control_port=10003,
-                            server_port=16000,
-                            num_envs=[1, 1, 1])
+    runner = UnityEnvRunner(control_port=10006,
+                            server_port=17000,
+                            num_envs=[1, 2, 1])
     env_config = dict(
         environment_path=
         #r'C:\Users\cgilab\Documents\chengscott\bin\v20200303-attack4\G310.exe',
@@ -67,6 +67,8 @@ if __name__ == "__main__":
                 "train_batch_size": 1200,
                 "sgd_minibatch_size": 16,
                 "num_sgd_iter": 4,
+                # === Model Settings ===
+                "fcnet_hiddens": [256, 256],
                 "vf_share_layers": True,
                 # === Settings for Multi-Agent Environments ===
                 "multiagent": {
