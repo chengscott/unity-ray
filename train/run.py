@@ -7,14 +7,16 @@ from ray import tune
 from ray.rllib.models import ModelCatalog
 
 if __name__ == "__main__":
-    runner = UnityEnvRunner(control_port=10006,
-                            server_port=17000,
-                            num_envs=[1, 2, 1])
+    runner = UnityEnvRunner(control_port=5001,
+                            server_port=12000,
+                            num_envs=[1] * 1)
     env_config = dict(
         environment_path=
         #r'C:\Users\cgilab\Documents\chengscott\bin\v20200303-attack4\G310.exe',
-        r'C:\Users\Administrator\Documents\chengscott\bin\v20200303-attack4\G310.exe',
-        port=20000,
+        #r'C:\Users\Administrator\Documents\chengscott\bin\v20200303-attack4\G310.exe',
+        #r'C:\Users\Administrator\Documents\chengscott\bin\v20200407-attack4\G310.exe',
+        r'C:\Users\Administrator\Documents\chengscott\bin\v20200515-jean_agent_ver8_4ma\G310.exe',
+        port=10000,
         use_visual=False,
         use_vector=True,
         multiagent=True,
@@ -45,7 +47,7 @@ if __name__ == "__main__":
                 "batch_mode": "truncate_episodes",
                 # === Settings for the Trainer process ===
                 "num_gpus": 1,
-                "num_cpus_per_worker": 1,
+                "num_cpus_per_worker": .001,
                 "num_gpus_per_worker": 0,
                 # === Environment Settings ===
                 "env": UnityEnv,
@@ -55,7 +57,7 @@ if __name__ == "__main__":
                 "no_done_at_end": True,
                 "lr_schedule": [[0, 0.00025], [80000000, 0.0]],
                 # === PPO-specific Settings ===
-                "gamma": 0.998,
+                "gamma": 0.995,
                 "lambda": 0.95,
                 "kl_coeff": 0.0,
                 "vf_loss_coeff": 1.0,
@@ -68,7 +70,6 @@ if __name__ == "__main__":
                 "sgd_minibatch_size": 16,
                 "num_sgd_iter": 4,
                 # === Model Settings ===
-                "fcnet_hiddens": [256, 256],
                 "vf_share_layers": True,
                 # === Settings for Multi-Agent Environments ===
                 "multiagent": {
@@ -76,6 +77,8 @@ if __name__ == "__main__":
                         "default_brain": (MyPpoPolicy, obs_space, act_space, {
                             "model": {
                                 "custom_model": "ppo_model",
+                                "fcnet_activation": "relu",
+                                "fcnet_hiddens": [256, 256],
                             },
                         }),
                     },
@@ -86,7 +89,8 @@ if __name__ == "__main__":
                 "log_level": "INFO",
                 "callbacks": metric_callbacks,
             },
-            checkpoint_freq=10,
+            reuse_actors=True,
+            checkpoint_freq=25,
             max_failures=5,
         )
     finally:
